@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -25,7 +26,8 @@ public class QuestionController {
 	private QnaService qnaService;
 
 	@GetMapping("")
-	public String showAll() {
+	public String showAll(Model model) {
+		model.addAttribute("questions", qnaService.findAll());
 		return "home";
 	}
 
@@ -42,7 +44,8 @@ public class QuestionController {
 	}
 
 	@GetMapping("/{id}")
-	public String show() {
+	public String show(@PathVariable long id, Model model) {
+		model.addAttribute("question", qnaService.findById(id));
 		return "/qna/show";
 	}
 
