@@ -80,6 +80,23 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void 내_질문_수정() {
+		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodedForm();
+
+		User user = defaultUser();
+		TestRestTemplate template = basicAuthTemplate(user);
+
+		builder.addParameter("id", "1");
+		builder.addParameter("title", "질문수정한다!");
+		builder.addParameter("contents", "질문수정이다아아아!");
+		builder.addParameter("_method", "PUT");
+
+		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
+
+		ResponseEntity<String> response = template.postForEntity("/questions/1", request, String.class);
+
+		assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
+		assertThat(questionRepository.findOne(Long.valueOf(1)).getTitle(), is("질문수정한다!"));
+		assertThat(response.getHeaders().getLocation().getPath(), is("/questions"));
 	}
 
 	@Test
