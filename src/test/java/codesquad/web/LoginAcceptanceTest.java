@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import support.test.AcceptanceTest;
+import support.test.HtmlFormDataBuilder;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNull;
@@ -27,13 +28,13 @@ public class LoginAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void 로그인_성공() {
-		HttpHeaders headers = new HttpHeaders();
-		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		params.add("userId", "javajigi");
-		params.add("password", "test");
-		params.add("name", "자바지기");
-		params.add("email", "javajigi@slipp.net");
-		HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(params, headers);
+		HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
+
+		htmlFormDataBuilder.addParameter("userId", "javajigi");
+		htmlFormDataBuilder.addParameter("password", "test");
+
+		HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
+
 		ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
 
 		assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
@@ -42,13 +43,13 @@ public class LoginAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void 로그인_실패() {
-		HttpHeaders headers = new HttpHeaders();
-		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		params.add("userId", "test");
-		params.add("password", "test");
-		params.add("name", "test");
-		params.add("email", "test");
-		HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(params, headers);
+		HtmlFormDataBuilder htmlFormDataBuilder = HtmlFormDataBuilder.urlEncodedForm();
+
+		htmlFormDataBuilder.addParameter("userId", "test");
+		htmlFormDataBuilder.addParameter("password", "test");
+
+		HttpEntity<MultiValueMap<String, Object>> request = htmlFormDataBuilder.build();
+
 		ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
 
 		assertThat(response.getStatusCode(), is(HttpStatus.OK));
