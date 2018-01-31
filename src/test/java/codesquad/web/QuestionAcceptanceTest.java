@@ -18,8 +18,7 @@ import support.test.HtmlFormDataBuilder;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public class QuestionAcceptanceTest extends AcceptanceTest {
 	private static final Logger log = LoggerFactory.getLogger(QuestionAcceptanceTest.class);
@@ -49,8 +48,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 	public void 회원_질문_추가() {
 		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodedForm();
 
-		User user = defaultUser();
-		TestRestTemplate template = basicAuthTemplate(user);
+		TestRestTemplate template = basicAuthTemplate();
 
 		builder.addParameter("title", "테스트다!");
 		builder.addParameter("contents", "테스트내용이다!");
@@ -82,10 +80,8 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 	public void 내_질문_수정() {
 		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodedForm();
 
-		User user = defaultUser();
-		TestRestTemplate template = basicAuthTemplate(user);
+		TestRestTemplate template = basicAuthTemplate();
 
-		builder.addParameter("id", "1");
 		builder.addParameter("title", "질문수정한다!");
 		builder.addParameter("contents", "질문수정이다아아아!");
 		builder.addParameter("_method", "PUT");
@@ -103,27 +99,49 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 	public void 남의_질문_수정() {
 		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodedForm();
 
-		User user = new User("test", "test", "test", "test");
-		TestRestTemplate template = basicAuthTemplate(user);
+		TestRestTemplate template = basicAuthTemplate();
 
-		builder.addParameter("id", "1");
 		builder.addParameter("title", "질문수정한다!");
 		builder.addParameter("contents", "질문수정이다아아아!");
 		builder.addParameter("_method", "PUT");
 
 		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
 
-		ResponseEntity<String> response = template.postForEntity("/questions/1", request, String.class);
+		ResponseEntity<String> response = template.postForEntity("/questions/2", request, String.class);
 
 		assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN));
 	}
 
 	@Test
 	public void 내_질문_삭제() {
+		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodedForm();
+
+		TestRestTemplate template = basicAuthTemplate();
+
+		builder.addParameter("_method", "DELETE");
+
+		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
+
+		ResponseEntity<String> response = template.postForEntity("/questions/1", request, String.class);
+
+		assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
+		assertThat(response.getHeaders().getLocation().getPath(), is("/questions"));
+		assertTrue(questionRepository.findOne(Long.valueOf(1)).isDeleted());
 	}
 
 	@Test
 	public void 남의_질문_삭제() {
+		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodedForm();
+
+		TestRestTemplate template = basicAuthTemplate();
+
+		builder.addParameter("_method", "DELETE");
+
+		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
+
+		ResponseEntity<String> response = template.postForEntity("/questions/2", request, String.class);
+
+		assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN));
 	}
 	
 }

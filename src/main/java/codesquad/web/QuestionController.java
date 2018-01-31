@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.CannotDeleteException;
 import codesquad.UnAuthorizedException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
@@ -46,14 +47,19 @@ public class QuestionController {
 	}
 
 	@PutMapping("/{id}")
-	public String update(@LoginUser User user, long id, String title, String contents) {
+	public String update(@LoginUser User user, @PathVariable long id, String title, String contents) {
 		Question target = new Question(title, contents);
 		qnaService.update(user, id, target);
 		return "redirect:/questions";
 	}
 
 	@DeleteMapping("/{id}")
-	public String delete() {
+	public String delete(@LoginUser User user, @PathVariable long id) {
+		try {
+			qnaService.deleteQuestion(user, id);
+		} catch (CannotDeleteException e) {
+			e.printStackTrace();
+		}
 		return "redirect:/questions";
 	}
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import codesquad.UnAuthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -42,13 +43,21 @@ public class QnaService {
 
     public Question update(User loginUser, long id, Question updatedQuestion) {
         Question original = questionRepository.findOne(id);
+        if (loginUser.getId() != original.getWriter().getId())
+            throw new UnAuthorizedException();
+
         original.update(updatedQuestion);
         return questionRepository.save(original);
     }
 
     @Transactional
-    public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
-        // TODO 삭제 기능 구현
+    public Question deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
+        Question question = questionRepository.findOne(questionId);
+        if (loginUser.getId() != question.getWriter().getId())
+            throw new UnAuthorizedException();
+
+        question.setDeleted(true);
+        return questionRepository.save(question);
     }
 
     public Iterable<Question> findAll() {
