@@ -41,13 +41,12 @@ public class QuestionController {
 	}
 
 	@GetMapping("/{id}")
-	public String show(@LoginUser User user, String title, String contents) {
+	public String show() {
 		return "/qna/show";
 	}
 
 	@PutMapping("/{id}")
 	public String update(@LoginUser User user, long id, String title, String contents) {
-		log.debug("우다ㅇ다다닫다다다다다다닫다ㅏ다다다다");
 		Question target = new Question(title, contents);
 		qnaService.update(user, id, target);
 		return "redirect:/questions";
