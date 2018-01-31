@@ -43,20 +43,14 @@ public class QnaService {
 
     public Question update(User loginUser, long id, Question updatedQuestion) {
         Question original = questionRepository.findOne(id);
-        if (loginUser.getId() != original.getWriter().getId())
-            throw new UnAuthorizedException();
-
-        original.update(updatedQuestion);
+        original.update(loginUser, updatedQuestion);
         return questionRepository.save(original);
     }
 
     @Transactional
     public Question deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
         Question question = questionRepository.findOne(questionId);
-        if (loginUser.getId() != question.getWriter().getId())
-            throw new UnAuthorizedException();
-
-        question.setDeleted(true);
+        question.delete(loginUser, true);
         return questionRepository.save(question);
     }
 
