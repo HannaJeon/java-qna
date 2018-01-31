@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.UnAuthorizedException;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
@@ -54,7 +55,6 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 		builder.addParameter("title", "테스트다!");
 		builder.addParameter("contents", "테스트내용이다!");
 
-		log.debug(user.toString());
 		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
 
 		ResponseEntity<String> response = template.postForEntity("/questions", request, String.class);
@@ -66,6 +66,16 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void 비회원_질문_추가() {
+		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodedForm();
+
+		builder.addParameter("title", "비회원이다!");
+		builder.addParameter("contents", "비회원이 질문한다!");
+
+		HttpEntity<MultiValueMap<String, Object>> request = builder.build();
+
+		ResponseEntity<String> response = template().postForEntity("/questions", request, String.class);
+
+		assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN));
 	}
 
 	@Test
