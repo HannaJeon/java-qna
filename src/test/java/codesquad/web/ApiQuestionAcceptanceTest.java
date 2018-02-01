@@ -4,6 +4,7 @@ import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
 import codesquad.dto.QuestionDto;
+import codesquad.dto.QuestionsDto;
 import codesquad.dto.UserDto;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void create() throws Exception {
-		String location = createResource("/api/questions", question, basicAuthTemplate());
+		String location = createResource("/api/questions", question);
 
 		QuestionDto dbQuestion = basicAuthTemplate().getForObject(location, QuestionDto.class);
 
@@ -43,8 +44,18 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 	}
 
 	@Test
+	public void showAll() throws Exception {
+		createResource("/api/questions", question);
+		createResource("/api/questions", question);
+
+		QuestionsDto dbQuestions = getResource("/api/questions", QuestionsDto.class);
+		assertThat(dbQuestions.getSize(), is(4));
+		assertThat(dbQuestions.getContents().contains(question), is(true));
+	}
+
+	@Test
 	public void show() throws Exception {
-		String location = createResource("/api/questions", question, basicAuthTemplate());
+		String location = createResource("/api/questions", question);
 
 		ResponseEntity<String> response = basicAuthTemplate().getForEntity(location, String.class);
 		assertThat(response.getStatusCode(), is(HttpStatus.OK));
@@ -52,12 +63,12 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void update_owner() throws Exception {
-		String location = createResource("/api/questions", question, basicAuthTemplate());
+		String location = createResource("/api/questions", question);
 
 		QuestionDto updateQuestion = new QuestionDto("바뀌었다", "바뀐질문이다아");
 		basicAuthTemplate().put(location, updateQuestion);
 
-		QuestionDto dbQuestion = getResource(location, QuestionDto.class, defaultUser());
+		QuestionDto dbQuestion = getResource(location, QuestionDto.class);
 
 		assertThat(dbQuestion.getTitle(), is(updateQuestion.getTitle()));
 		assertThat(dbQuestion.getContents(), is(updateQuestion.getContents()));
@@ -65,27 +76,27 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void update_not_owner() throws Exception {
-		String location = createResource("/api/questions", question, basicAuthTemplate());
+		String location = createResource("/api/questions", question);
 
 		QuestionDto updateQuestion = new QuestionDto("바뀌었다", "바뀐질문이다아");
 		User user = new User("test", "test", "test", "test");
-		basicAuthTemplate().put(location, QuestionDto.class, user);
+		basicAuthTemplate(user).put(location, QuestionDto.class);
 
 		QuestionDto dbQuestion = getResource(location, QuestionDto.class, defaultUser());
 		assertNotEquals(dbQuestion.getTitle(), updateQuestion.getTitle());
 	}
 
 	@Test
-	public void delete_owner() {
-		String location = createResource("/api/questions", question, basicAuthTemplate());
+	public void delete_owner() throws Exception {
+		String location = createResource("/api/questions", question);
 		basicAuthTemplate().delete(location);
 		QuestionDto dbQuestion = getResource(location, QuestionDto.class, defaultUser());
 		assertTrue(dbQuestion.isDeleted());
 	}
 
 	@Test
-	public void delete_not_owner() {
-		String location = createResource("/api/questions", question, basicAuthTemplate());
+	public void delete_not_owner() throws Exception {
+		String location = createResource("/api/questions", question);
 
 		User user = new User("test", "test", "test", "test");
 		basicAuthTemplate(user).delete(location);

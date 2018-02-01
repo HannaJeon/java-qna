@@ -3,6 +3,7 @@ package codesquad.dto;
 import codesquad.domain.Question;
 
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
 public class QuestionDto {
     private long id;
@@ -62,5 +63,21 @@ public class QuestionDto {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        QuestionDto that = (QuestionDto) o;
+        return deleted == that.deleted &&
+                Objects.equals(title, that.title) &&
+                Objects.equals(contents, that.contents);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(title, contents, deleted);
     }
 }

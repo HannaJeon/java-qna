@@ -4,6 +4,7 @@ import codesquad.CannotDeleteException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.dto.QuestionDto;
+import codesquad.dto.QuestionsDto;
 import codesquad.security.HttpSessionUtils;
 import codesquad.security.LoginUser;
 import codesquad.service.QnaService;
@@ -18,6 +19,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -33,6 +36,15 @@ public class ApiQuestionController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(URI.create("/api/questions/" + saveQuestion.getId()));
 		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+	}
+
+	@GetMapping("")
+	public QuestionsDto showAll() {
+		List<QuestionDto> questionsDto = new ArrayList<>();
+		for (Question question : qnaService.findAll()) {
+			questionsDto.add(question.toQuestionDto());
+		}
+		return new QuestionsDto(questionsDto);
 	}
 
 	@GetMapping("{id}")
