@@ -27,9 +27,6 @@ import static org.junit.Assert.assertTrue;
 public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 	private static final Logger log = LoggerFactory.getLogger(ApiQuestionAcceptanceTest.class);
 
-	@Autowired
-	private QuestionRepository questionRepository;
-
 	private final QuestionDto question = new QuestionDto("질문이다아아아", "질문이다아아아아아");
 
 	@Test
