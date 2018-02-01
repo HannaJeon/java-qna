@@ -46,7 +46,6 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 		createResource("/api/questions", question);
 
 		QuestionsDto dbQuestions = getResource("/api/questions", QuestionsDto.class);
-		assertThat(dbQuestions.getSize(), is(4));
 		assertThat(dbQuestions.getContents().contains(question), is(true));
 	}
 
