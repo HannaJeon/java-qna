@@ -40,4 +40,9 @@ public class ApiQuestionController {
 		return question.toQuestionDto();
 	}
 
+	@PutMapping("{id}")
+	public void update(@LoginUser User user, @PathVariable long id, @Valid @RequestBody Question question) {
+		qnaService.update(user, id, question);
+	}
+
 }
