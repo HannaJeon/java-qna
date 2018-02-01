@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import support.test.AcceptanceTest;
@@ -20,6 +21,7 @@ import javax.xml.ws.Response;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 	private static final Logger log = LoggerFactory.getLogger(ApiQuestionAcceptanceTest.class);
@@ -31,7 +33,6 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void create() throws Exception {
-		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodedForm();
 		String location = createResource("/api/questions", question, basicAuthTemplate());
 
 		QuestionDto dbQuestion = basicAuthTemplate().getForObject(location, QuestionDto.class);
@@ -43,7 +44,6 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void show() throws Exception {
-		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodedForm();
 		String location = createResource("/api/questions", question, basicAuthTemplate());
 
 		ResponseEntity<String> response = basicAuthTemplate().getForEntity(location, String.class);
@@ -52,7 +52,6 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void update_owner() throws Exception {
-		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodedForm();
 		String location = createResource("/api/questions", question, basicAuthTemplate());
 
 		QuestionDto updateQuestion = new QuestionDto("바뀌었다", "바뀐질문이다아");
@@ -66,7 +65,6 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
 	@Test
 	public void update_not_owner() throws Exception {
-		HtmlFormDataBuilder builder = HtmlFormDataBuilder.urlEncodedForm();
 		String location = createResource("/api/questions", question, basicAuthTemplate());
 
 		QuestionDto updateQuestion = new QuestionDto("바뀌었다", "바뀐질문이다아");
@@ -75,5 +73,23 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
 		QuestionDto dbQuestion = getResource(location, QuestionDto.class, defaultUser());
 		assertNotEquals(dbQuestion.getTitle(), updateQuestion.getTitle());
+	}
+
+	@Test
+	public void delete_owner() {
+		String location = createResource("/api/questions", question, basicAuthTemplate());
+		basicAuthTemplate().delete(location);
+		QuestionDto dbQuestion = getResource(location, QuestionDto.class, defaultUser());
+		assertTrue(dbQuestion.isDeleted());
+	}
+
+	@Test
+	public void delete_not_owner() {
+		String location = createResource("/api/questions", question, basicAuthTemplate());
+
+		User user = new User("test", "test", "test", "test");
+		basicAuthTemplate(user).delete(location);
+		QuestionDto dbQuestion = getResource(location, QuestionDto.class, defaultUser());
+		assertTrue(!dbQuestion.isDeleted());
 	}
 }

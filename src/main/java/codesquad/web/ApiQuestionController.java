@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.CannotDeleteException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.dto.QuestionDto;
@@ -43,6 +44,15 @@ public class ApiQuestionController {
 	@PutMapping("{id}")
 	public void update(@LoginUser User user, @PathVariable long id, @Valid @RequestBody Question question) {
 		qnaService.update(user, id, question);
+	}
+
+	@DeleteMapping("{id}")
+	public void delete(@LoginUser User user, @PathVariable long id) {
+		try {
+			qnaService.deleteQuestion(user, id);
+		} catch (CannotDeleteException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
