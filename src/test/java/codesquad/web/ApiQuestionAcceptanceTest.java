@@ -31,7 +31,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 	public void create() throws Exception {
 		String location = createResource("/api/questions", question);
 
-		QuestionDto dbQuestion = basicAuthTemplate().getForObject(location, QuestionDto.class);
+		QuestionDto dbQuestion = getResource(location, QuestionDto.class);
 
 		assertThat(dbQuestion, is(question));
 		assertThat(dbQuestion.getContents(), is(question.getContents()));
