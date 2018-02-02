@@ -33,7 +33,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
 		QuestionDto dbQuestion = basicAuthTemplate().getForObject(location, QuestionDto.class);
 
-		assertThat(dbQuestion.getTitle(), is(question.getTitle()));
+		assertThat(dbQuestion, is(question));
 		assertThat(dbQuestion.getContents(), is(question.getContents()));
 		assertThat(location, is("/api/questions/" + dbQuestion.getId()));
 	}
@@ -64,8 +64,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
 		QuestionDto dbQuestion = getResource(location, QuestionDto.class);
 
-		assertThat(dbQuestion.getTitle(), is(updateQuestion.getTitle()));
-		assertThat(dbQuestion.getContents(), is(updateQuestion.getContents()));
+		assertThat(dbQuestion, is(updateQuestion));
 	}
 
 	@Test
@@ -73,11 +72,11 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 		String location = createResource("/api/questions", question);
 
 		QuestionDto updateQuestion = new QuestionDto("바뀌었다", "바뀐질문이다아");
-		User user = new User("test", "test", "test", "test");
+		User user = new User("hanna", "password", "Hanna", "jks7psj@gmail.com");
 		basicAuthTemplate(user).put(location, QuestionDto.class);
 
 		QuestionDto dbQuestion = getResource(location, QuestionDto.class, defaultUser());
-		assertNotEquals(dbQuestion.getTitle(), updateQuestion.getTitle());
+		assertNotEquals(dbQuestion, updateQuestion);
 	}
 
 	@Test
@@ -92,7 +91,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 	public void delete_not_owner() throws Exception {
 		String location = createResource("/api/questions", question);
 
-		User user = new User("test", "test", "test", "test");
+		User user = new User("hanna", "password", "Hanna", "jks7psj@gmail.com");
 		basicAuthTemplate(user).delete(location);
 		QuestionDto dbQuestion = getResource(location, QuestionDto.class, defaultUser());
 		assertNotNull(dbQuestion);
