@@ -20,9 +20,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.xml.ws.Response;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 	private static final Logger log = LoggerFactory.getLogger(ApiQuestionAcceptanceTest.class);
@@ -87,7 +85,7 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 		String location = createResource("/api/questions", question);
 		basicAuthTemplate().delete(location);
 		QuestionDto dbQuestion = getResource(location, QuestionDto.class, defaultUser());
-		assertTrue(dbQuestion.isDeleted());
+		assertNull(dbQuestion);
 	}
 
 	@Test
@@ -97,6 +95,6 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 		User user = new User("test", "test", "test", "test");
 		basicAuthTemplate(user).delete(location);
 		QuestionDto dbQuestion = getResource(location, QuestionDto.class, defaultUser());
-		assertTrue(!dbQuestion.isDeleted());
+		assertNotNull(dbQuestion);
 	}
 }

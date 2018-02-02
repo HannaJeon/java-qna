@@ -14,20 +14,17 @@ public class QuestionDto {
     @Size(min = 3)
     private String contents;
 
-    private boolean deleted;
-
     public QuestionDto() {
     }
 
     public QuestionDto(String title, String contents) {
-        this(0, title, contents, false);
+        this(0, title, contents);
     }
 
-    public QuestionDto(long id, String title, String contents, boolean deleted) {
+    public QuestionDto(long id, String title, String contents) {
         this.id = id;
         this.title = title;
         this.contents = contents;
-        this.deleted = deleted;
     }
 
     public long getId() {
@@ -57,27 +54,18 @@ public class QuestionDto {
         return this;
     }
 
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         QuestionDto that = (QuestionDto) o;
-        return deleted == that.deleted &&
-                Objects.equals(title, that.title) &&
+        return Objects.equals(title, that.title) &&
                 Objects.equals(contents, that.contents);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(title, contents, deleted);
+        return Objects.hash(title, contents);
     }
 }

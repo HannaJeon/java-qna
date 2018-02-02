@@ -5,6 +5,7 @@ import codesquad.domain.Answer;
 public class AnswerDto {
 	private long id;
 	private String contents;
+	private boolean deleted;
 
 	public AnswerDto() {
 	}
@@ -35,7 +36,7 @@ public class AnswerDto {
 	}
 
 	public Answer toAnswer() {
-		return new Answer(this.id, this.contents);
+		return new Answer(this.id, this.contents, this.deleted);
 	}
 
 	@Override

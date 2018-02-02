@@ -7,9 +7,12 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.Size;
 
+import codesquad.UnAuthorizedException;
 import codesquad.dto.AnswerDto;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class Answer extends AbstractEntity implements UrlGeneratable {
@@ -35,9 +38,10 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         this.contents = contents;
     }
 
-    public Answer(long id, String contents) {
+    public Answer(long id, String contents, boolean deleted) {
         super(id);
         this.contents = contents;
+        this.deleted = deleted;
     }
 
     public Answer(Long id, User writer, Question question, String contents) {
@@ -77,7 +81,17 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
     }
 
     public AnswerDto toAnswerDto() {
+        if (isDeleted()) {
+            return null;
+        }
         return new AnswerDto(getId(), this.contents);
+    }
+
+    public void delete(User loginUser) {
+        if (!isOwner(loginUser))
+            throw new UnAuthorizedException();
+
+        this.deleted = true;
     }
 
     @Override
