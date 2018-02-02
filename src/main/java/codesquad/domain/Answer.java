@@ -7,6 +7,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.Size;
 
+import codesquad.dto.AnswerDto;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
@@ -34,12 +35,21 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         this.contents = contents;
     }
 
+    public Answer(long id, String contents) {
+        super(id);
+        this.contents = contents;
+    }
+
     public Answer(Long id, User writer, Question question, String contents) {
         super(id);
         this.writer = writer;
         this.question = question;
         this.contents = contents;
         this.deleted = false;
+    }
+
+    public void writeBy(User loginUser) {
+        this.writer = loginUser;
     }
 
     public User getWriter() {
@@ -66,9 +76,13 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         return deleted;
     }
 
+    public AnswerDto toAnswerDto() {
+        return new AnswerDto(getId(), this.contents);
+    }
+
     @Override
     public String generateUrl() {
-        return String.format("%s/answers/%d", question.generateUrl(), getId());
+        return String.format("/api/%s/answers/%d", question.generateUrl(), getId());
     }
 
     @Override

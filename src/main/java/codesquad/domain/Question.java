@@ -87,7 +87,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 
     @Override
     public String generateUrl() {
-        return String.format("/questions/%d", getId());
+        return String.format("questions/%d", getId());
     }
 
     public QuestionDto toQuestionDto() {
