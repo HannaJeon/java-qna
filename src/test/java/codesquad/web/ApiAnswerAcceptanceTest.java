@@ -29,7 +29,7 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
 		AnswerDto answerDto = new AnswerDto("답변 컨텐츠다아아아아");
 		String location = createResource(questionLocation + "/answers", answerDto);
-		log.debug("answerRepository.findAll(): {}", answerRepository.findAll());
+
 		AnswerDto dbAnswer = getResource(location, AnswerDto.class);
 		assertThat(dbAnswer.getContents(), is(answerDto.getContents()));
 	}

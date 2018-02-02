@@ -18,7 +18,7 @@ import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/api/questions/{questionid}/answers")
+@RequestMapping("/api/questions/{questionId}/answers")
 public class ApiAnswerController {
 	private static final Logger log = LoggerFactory.getLogger(ApiAnswerController.class);
 
@@ -26,8 +26,8 @@ public class ApiAnswerController {
 	private QnaService qnaService;
 
 	@PostMapping("")
-	public ResponseEntity<Void> create(@LoginUser User user, @PathVariable long questionid, @Valid @RequestBody Answer answer) {
-		Answer saveAnswer = qnaService.addAnswer(user, questionid, answer);
+	public ResponseEntity<Void> create(@LoginUser User user, @PathVariable long questionId, @Valid @RequestBody Answer answer) {
+		Answer saveAnswer = qnaService.addAnswer(user, questionId, answer);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(URI.create(saveAnswer.generateUrl()));
 		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
@@ -35,7 +35,6 @@ public class ApiAnswerController {
 
 	@GetMapping("/{id}")
 	public AnswerDto show(@PathVariable long questionId, @PathVariable long id) {
-		log.debug("가나다: {}");
 		Answer answer = qnaService.findByIdAnswer(id);
 		return answer.toAnswerDto();
 	}
